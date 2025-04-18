@@ -9,7 +9,14 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.shoppingList",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch"
+        ],
+        "NSMicrophoneUsageDescription": "This app requires microphone access to play alarms."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -31,6 +38,19 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      "expo-background-task",
+      [
+        "expo-sensors",
+        {
+          "motionPermission": "Allow $(PRODUCT_NAME) to access your device motion"
         }
       ]
     ],
