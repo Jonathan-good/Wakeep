@@ -13,6 +13,8 @@ interface Alarm {
   label: string;
   weekdays: number[];
   weekends: number[];
+
+  gameMode: number[];
 }
 
 interface AlarmCardProps {
@@ -22,6 +24,7 @@ interface AlarmCardProps {
 
 const weekdaysList : string[] = ["M", "T", "W", "Th", "F"];
 const weekendsList : string[] = ["Sa", "Su"];
+const modesList : string[] = ["Q", "B"];
 
 const AlarmCard: React.FC<AlarmCardProps> = ({ alarm, onOptionsPress }) => {
 
@@ -49,6 +52,14 @@ const AlarmCard: React.FC<AlarmCardProps> = ({ alarm, onOptionsPress }) => {
       {/* Alarm Time */}
       <Text style={styles.time}> {`${ String(alarm.hour).padStart(2, "0") }:${ String(alarm.minutes).padStart(2, "0") } ${alarm.AM ? "AM" : "PM"}`} </Text>
       <Text style={styles.label}>{alarm.label}</Text>
+
+      <View style={styles.gameModeRow}>
+        {alarm.gameMode.map((mode, index) => (
+          <Text key={`mode-${index}`} style={(mode === 1) ? styles.modeEnabled : styles.modeDisabled}>
+            {modesList[index]}
+          </Text>
+        ))}
+      </View>
 
       {/* Options Button */}
       <TouchableOpacity style={styles.optionsButton} onPress={() => onOptionsPress()}>
@@ -83,14 +94,31 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     justifyContent: "center",
   },
+  gameModeRow: {
+    flexDirection: "row",
+    marginBottom: 8,
+    justifyContent: "center",
+  },
   dayEnabled: {
     fontSize: 12,
     fontWeight: "bold",
     color: "#4A3F6D",
     paddingHorizontal: 5,
   },
+  modeEnabled: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "coral",
+    paddingHorizontal: 5,
+  },
   dayDisabled: {
     fontSize: 12,
+    fontWeight: "bold",
+    color: "#CDCDCD",
+    paddingHorizontal: 5,
+  },
+  modeDisabled: {
+    fontSize: 30,
     fontWeight: "bold",
     color: "#CDCDCD",
     paddingHorizontal: 5,

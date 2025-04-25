@@ -1,98 +1,194 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Modal, View, StyleSheet, Animated, Dimensions } from 'react-native';
-import { Gyroscope } from 'expo-sensors';
+import { Modal, View, StyleSheet, Animated, Dimensions, Text, Alert} from 'react-native';
+import { Accelerometer } from 'expo-sensors';
+import { generateMaze } from '@/utils/generateMaze.tsx'
 
 interface BallGameModalProps {
-  visible: boolean;
-  onClose: () => void;
+	visible: boolean;
+	onComplete: () => void;
 }
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const BALL_SIZE = 50;
-const UPDATE_INTERVAL = 1;
-const ALPHA = 0.1;
+
+const MAZE_ROWS = 15;
+const MAZE_COLS = 15;
+const CELL_SIZE = SCREEN_WIDTH / MAZE_COLS;
+
+const BALL_SIZE = CELL_SIZE * 0.8;
+const BALL_RADIUS = BALL_SIZE / 2;
+
+const ALPHA = 0.05;
+const FRICTION = 0.99;
+const EPS = 0.05;
+const MAX_VELOCITY = 1.5;
+
+const INIT_X_POS = CELL_SIZE * 1.5 - BALL_RADIUS;
+const INIT_Y_POS = CELL_SIZE * 1.5 - BALL_RADIUS + (SCREEN_HEIGHT / 2 - SCREEN_WIDTH / 2);
 
 
 
-const BallGameModal: React.FC<BallGameModalProps> = ({ visible, onClose }) => {
-  const [subscription, setSubscription] = useState<any>(null);
-  const ballPosition = useRef(new Animated.ValueXY({
-    x: SCREEN_WIDTH / 2 - BALL_SIZE / 2,
-    y: SCREEN_HEIGHT / 2 - BALL_SIZE / 2,
-  })).current;
+const BallGameModal: React.FC<BallGameModalProps> = ({ visible, onComplete}) => {
+	const [subscription, setSubscription] = useState(null);
+	const [won, setWon] = useState(false);
+	const [mazeMap, setMazeMap] = useState(generateMaze(MAZE_ROWS, MAZE_COLS));
+	
+	const ballPosition = useRef(new Animated.ValueXY({
+		x: INIT_X_POS, 
+		y: INIT_Y_POS,
+	})).current;
 
-  const velocity = useRef({ x: 0, y: 0 });
+	const velocity = useRef({ x: 0, y: 0 });
 
-  useEffect(() => {
-    if (visible) {
-      const sub = Gyroscope.addListener(({ x, y }) => {
+	const getCell = (x: number, y: number) => {
+		const col = Math.floor((x + BALL_RADIUS) / CELL_SIZE);
+		const row = Math.floor((y - (SCREEN_HEIGHT / 2 - SCREEN_WIDTH / 2) + BALL_RADIUS) / CELL_SIZE);
+		return { row, col };
+	};
 
-        if(Math.abs(x) < EPISLON && Math.abs(y) < EPISLON){
-          velocity.current.x -= 
-          velocity.current.y -= velocity
-        }else{
-          velocity.current.x += y * ALPHA;
-          velocity.current.y += x * ALPHA;
+	const isWall = (x: number, y: number) => {
+		const corners = [
+			{ x: x - BALL_RADIUS, y },
+			{ x: x + BALL_RADIUS, y },
+			{ x, y: y - BALL_RADIUS },
+			{ x, y: y + BALL_RADIUS },
+		];
 
-        }
+		return corners.some(({ x, y }) => {
+			const { row, col } = getCell(x, y);
+			return mazeMap[row]?.[col] === 1;
+		});
+	};
 
-        let nextX = ballPosition.x._value + velocity.current.x;
-        let nextY = ballPosition.y._value + velocity.current.y;
+	const isGoal = (x: number, y: number) => {
+		const { row, col } = getCell(x, y);
+		return mazeMap[row]?.[col] === 2;
+	};
 
-        if (nextX < 0) {
-          nextX = 0;
-          velocity.current.x = 0;
-        } else if (nextX > SCREEN_WIDTH - BALL_SIZE) {
-          nextX = SCREEN_WIDTH - BALL_SIZE;
-          velocity.current.x = 0;
-        }
+	const resetMaze = () => {
+		setMazeMap(generateMaze(MAZE_ROWS, MAZE_COLS));
+	}
 
-        if (nextY < 0) {
-          nextY = 0;
-          velocity.current.y = 0;
-        } else if (nextY > SCREEN_HEIGHT - BALL_SIZE) {
-          nextY = SCREEN_HEIGHT - BALL_SIZE;
-          velocity.current.y = 0;
-        }
+	const _subscribe = () => {
+		setSubscription(
+			Accelerometer.addListener(({ x, y }) => {
+				// Apply friction or acceleration
+				// Calculate velocity
+				if (Math.abs(x) < EPS && Math.abs(y) < EPS) {
+					velocity.current.x *= FRICTION;
+					velocity.current.y *= FRICTION;
+				} else {
+					velocity.current.x += x * ALPHA;
+					velocity.current.y += -y * ALPHA;
+				}
 
-        Animated.timing(ballPosition, {
-          toValue: { x: nextX, y: nextY },
-          duration: UPDATE_INTERVAL,
-          useNativeDriver: false,
-        }).start();
-      });
+				velocity.current.x = Math.max(Math.min(velocity.current.x, MAX_VELOCITY), -MAX_VELOCITY);
+				velocity.current.y = Math.max(Math.min(velocity.current.y, MAX_VELOCITY), -MAX_VELOCITY);
 
-      setSubscription(sub);
-      Gyroscope.setUpdateInterval(UPDATE_INTERVAL);
-    } else {
-      subscription?.remove();
-      setSubscription(null);
-    }
+				let nextX = ballPosition.x._value + velocity.current.x;
+				let nextY = ballPosition.y._value + velocity.current.y;
 
-    return () => subscription?.remove();
-  }, [visible]);
+				if (isWall(nextX, ballPosition.y._value)) {
+					nextX = ballPosition.x._value;
+					velocity.current.x = 0;
+				}
 
-  return (
-    <Modal visible={visible} animationType="slide" transparent={false}>
-      <View style={styles.container}>
-        <Animated.View style={[styles.ball, ballPosition.getLayout()]} />
-      </View>
-    </Modal>
-  );
+				if (isWall(ballPosition.x._value, nextY)) {
+					nextY = ballPosition.y._value;
+					velocity.current.y = 0;
+				}
+
+				if (isWall(nextX, nextY)) {
+					nextX = ballPosition.x._value;
+					nextY = ballPosition.y._value;
+					velocity.current.x = 0;
+					velocity.current.y = 0;
+				}
+
+
+				if (isGoal(ballPosition.x._value, ballPosition.y._value)) {
+					setWon(true);
+				}
+
+				// Update ball instantly
+				ballPosition.setValue({ x: nextX, y: nextY });
+			}) 
+		);
+
+		Accelerometer.setUpdateInterval(1);
+	}
+
+	const _unsubscribe = () => {
+		subscription && subscription.remove();
+		setSubscription(null);
+	}
+
+
+
+	useEffect(() => {
+		if (visible) {
+			ballPosition.setValue({x: INIT_X_POS, y: INIT_Y_POS});
+			_subscribe();
+
+		} else {
+			resetMaze();
+			setWon(false);
+		}
+
+		return () => subscription && subscription.remove();
+	}, [visible]);
+
+	useEffect(() => {
+		if(won == true){
+			_unsubscribe();
+			onComplete();
+			Alert.alert('Alarm Dismissed', 'You can get up or go back to sleep');
+		}
+	}, [won]);
+
+	return (
+		<Modal visible={visible} animationType="slide" transparent={false}>
+			<View style={styles.container}>
+				{mazeMap.map((row, rowIndex) => (
+					row.map((cell, colIndex) => (
+						<View
+							key={`${rowIndex}-${colIndex}`}
+							style={[
+								styles.cell,
+								{
+									left: colIndex * CELL_SIZE,
+									top: rowIndex * CELL_SIZE + SCREEN_HEIGHT / 2 - SCREEN_WIDTH / 2,
+									backgroundColor:
+										cell === 1 ? '#444' : cell === 2 ? '#4CAF50' : '#f0f0f0',
+								},
+							]}
+						/>
+					))
+				))}
+
+				<Animated.View style={[styles.ball, ballPosition.getLayout()]} />
+			</View>
+		</Modal>
+	);
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-  },
-  ball: {
-    width: BALL_SIZE,
-    height: BALL_SIZE,
-    borderRadius: BALL_SIZE / 2,
-    backgroundColor: '#4A3F6D',
-    position: 'absolute',
-  },
+	container: {
+		flex: 1,
+		position: 'relative',
+		backgroundColor: '#ddd',
+	},
+	cell: {
+		position: 'absolute',
+		width: CELL_SIZE,
+		height: CELL_SIZE,
+	},
+	ball: {
+		width: BALL_SIZE,
+		height: BALL_SIZE,
+		borderRadius: BALL_RADIUS,
+		backgroundColor: '#4A3F6D',
+		position: 'absolute',
+	},
 });
 
 export default BallGameModal;

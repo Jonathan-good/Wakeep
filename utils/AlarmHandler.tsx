@@ -1,12 +1,26 @@
 import * as Notifications from 'expo-notifications';
 import { Audio } from 'expo-av';
 import { Platform } from 'react-native';
-import { Alarm } from '@/types';
 import { getStoredAlarms, deleteAlarm } from '@/utils/AlarmStorage';
 import { useAlarmUI } from '@/context/alarmGlobal';
 
 
 let soundInstance: Audio.Sound | null = null;
+
+interface Alarm {
+  id: string;
+
+  hour: number;
+  minutes: number;
+
+  AM: boolean;
+
+  label: string;
+  weekdays: number[];
+  weekends: number[];
+  
+  gameMode: number[];
+}
 
 Audio.setAudioModeAsync({
     allowsRecordingIOS: false,
@@ -139,6 +153,7 @@ export const stopAlarm = async () => {
     soundInstance = null;
   }
   await Notifications.dismissAllNotificationsAsync();
+  console.log("stopped alarm hahha");
 };
 
 const getNextTriggerDate = (alarm: Alarm): Date => {

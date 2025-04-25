@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Alert } from 'react-native';
 import { stopAlarm } from '@/utils/AlarmHandler';
+import morningQuestions from '@/data/morningQuestions.json'
 
 interface Question {
   question: string;
@@ -14,40 +15,6 @@ interface MorningCueModalProps {
   onComplete: () => void;
   requiredStreak?: number;
 }
-
-const sampleQuestions: Question[] = [
-  {
-    question: 'What is 7 + 6?',
-    choices: ['12', '13', '14', '15'],
-    answer: '13',
-  },
-  {
-    question: 'Which planet is known as the Red Planet?',
-    choices: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
-    answer: 'Mars',
-  },
-  {
-    question: 'What is the capital of France?',
-    choices: ['London', 'Berlin', 'Paris', 'Madrid'],
-    answer: 'Paris',
-    diffi
-  },
-  {
-    question: 'Which number is a prime number?',
-    choices: ['4', '6', '7', '8'],
-    answer: '7',
-  },
-  {
-    question: 'Who is teaching ACL in 2024-2025',
-    choices: ['Dr.Varnold', 'Mr.Fawcett', 'Mr.James', 'Mrs.Flores'],
-    answer: 'Mr.Fawcett',
-  },
-  {
-    question: 'Which animal is known as the largest existing homonid, AKA great ape',
-    choices: ['Mr. Fawcett', 'Chimpanzees', 'Gorillas', 'Macaques'],
-    answer: 'Gorillas',
-  }
-];
 
 const MorningCueModal: React.FC<MorningCueModalProps> = ({ visible, onComplete, requiredStreak = 3 }) => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
@@ -62,7 +29,7 @@ const MorningCueModal: React.FC<MorningCueModalProps> = ({ visible, onComplete, 
 
   const resetChallenge = () => {
     setStreak(0);
-    const shuffled = shuffle([...sampleQuestions]);
+    const shuffled = shuffle([...morningQuestions]);
     setQuestionPool(shuffled);
     setCurrentQuestion(shuffled[0]);
   };

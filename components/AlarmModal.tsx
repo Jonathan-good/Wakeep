@@ -14,6 +14,8 @@ interface Alarm {
 	label: string;
 	weekdays: number[];
 	weekends: number[];
+
+	gameMode: number[];
 }
 
 interface AlarmModalProps {
@@ -26,6 +28,7 @@ interface AlarmModalProps {
 
 const weekdaysList : string[] = ["M", "T", "W", "Th", "F"];
 const weekendsList : string[] = ["Sa", "Su"];
+const modesList : string[] = ["Questions", "Ball Game"];
 
 const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDelete, alarmToEdit}) => {
 
@@ -35,6 +38,7 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	const [label, setLabel] = useState("");
 	const [weekdays, setWeekdays] = useState<number[]>([]);
 	const [weekends, setWeekends] = useState<number[]>([]);
+	const [gameMode, setModes] = useState<number[]>([]);
 
 	const getCurrentTime = () => {
 	    const now = new Date();
@@ -58,6 +62,7 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	      setLabel(alarmToEdit.label);
 	      setWeekdays(alarmToEdit.weekdays);
 	      setWeekends(alarmToEdit.weekends);
+	      setModes(alarmToEdit.gameMode);
 	    } else {
 	      // Adding a new alarm → Use current time
 	      const { currentHour, currentMinutes, isAM } = getCurrentTime();
@@ -67,6 +72,7 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	      setLabel("");
 	      setWeekdays([0,0,0,0,0]);
 	      setWeekends([0,0]);
+	      setModes([0,0]);
 	    }
 	  }, [alarmToEdit]);
 
@@ -82,17 +88,24 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	    );
 	};
 
+	const toggleMode = (index: number) => {
+			setModes((prev) =>
+	    	prev[index] === 1 ? prev.map((mode, i) => (i === index ? 0 : mode)) : prev.map((mode, i) => (i === index ? 1 : mode))
+	    );
+	}
+
 	const handleSave = () => {
 	    
 
 	    let newAlarm = {
-	      id: alarmToEdit ? alarmToEdit.id : Math.floor(Math.random()*100000000).toString(),
-	      hour,
-	      minutes,
-	      AM,
-	      label: (label ? label : "Alarm"),
-	      weekdays,
-	      weekends,
+	      "id": alarmToEdit ? alarmToEdit.id : Math.floor(Math.random()*100000000).toString(),
+	      "hour": hour,
+	      "minutes": minutes,
+	      "AM": AM,
+	      "label": (label ? label : "Alarm"),
+	      "weekdays": weekdays,
+	      "weekends": weekends,
+	      "gameMode": gameMode,
 	    };
 
 	    onSave(newAlarm);
@@ -149,11 +162,23 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	          <View style={styles.daysWeekendRow}>
 	            {weekendsList.map((day, index) => (
 	              <TouchableOpacity
-	                key={`weekday-${index}`}
+	                key={`weekend-${index}`}
 	                style={[styles.dayButton, weekends[index] === 1 && styles.selectedDay]}
 	                onPress={() => toggleWeekend(index)}
 	              >
 	                <Text style={styles.dayText}>{day}</Text>
+	              </TouchableOpacity>
+	            ))}
+	          </View>
+
+	          <View style={styles.modesRow}>
+	            {modesList.map((mode, index) => (
+	              <TouchableOpacity
+	                key={`mode-${index}`}
+	                style={[styles.dayButton, gameMode[index] === 1 && styles.selectedMode]}
+	                onPress={() => toggleMode(index)}
+	              >
+	                <Text style={styles.dayText}>{mode}</Text>
 	              </TouchableOpacity>
 	            ))}
 	          </View>
@@ -219,16 +244,23 @@ const styles = StyleSheet.create({
   },
   daysWeekdayRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     marginVertical: 10,
   },
   daysWeekendRow: {
     flexDirection: "row",
     marginVertical: 10,
-    justifyContent: "center",
+    justifyContent: "space-evenly",
+  },
+  modesRow: {
+  	flexDirection: "row",
+    marginVertical: 10,
+    justifyContent: "space-evenly",
   },
   dayButton: {
-    padding: 10,
+  	padding: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
     borderRadius: 25,
     borderWidth: 1,
     borderColor: "#ccc",
@@ -236,6 +268,10 @@ const styles = StyleSheet.create({
   selectedDay: {
     backgroundColor: "#7A6F9D",
     borderColor: "#7A6F9D",
+  },
+  selectedMode: {
+  	backgroundColor: "coral",
+  	borderColor: "coral",
   },
   dayText: {
     color: "#000",

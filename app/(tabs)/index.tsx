@@ -22,6 +22,8 @@ interface Alarm {
   label: string;
   weekdays: number[];
   weekends: number[];
+
+  gameMode: number[];
 }
 
 
@@ -30,7 +32,7 @@ export default function Alarm() {
   const [alarms, setAlarms] = React.useState<Alarm[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [morningCueVisible, setMorningCueVisible] = useState(false);
-  const [ballGameVisible, setBallGameVisible] = useState(true);
+  const [ballGameVisible, setBallGameVisible] = useState(false);
   const [alarmToEdit, setAlarmToEdit] = useState<Alarm | null>(null);
 
   //load saved alarms
@@ -66,6 +68,10 @@ export default function Alarm() {
     setModalVisible(true);
   };
 
+  const openAddModal2 = () => {
+    setBallGameVisible(true);
+  }
+
   const openEditModal = (alarm: Alarm) => {
     setAlarmToEdit(alarm);
     setModalVisible(true);
@@ -77,6 +83,10 @@ export default function Alarm() {
         <Text style={styles.title}>MyAlarm</Text>
         <TouchableOpacity style={styles.addButton} onPress={() => openAddModal()}>
           <Ionicons name="add" size={32} color="white" />
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.addButton} onPress={() => openAddModal2()}>
+          <Ionicons name="add" size={12} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -126,7 +136,7 @@ export default function Alarm() {
       <BallGameModal
         //visible={false}
         visible={ballGameVisible}
-        onClose={() => {
+        onComplete={() => {
           stopAlarm();
           setBallGameVisible(false);
         }}
@@ -172,3 +182,4 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+

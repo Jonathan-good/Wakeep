@@ -11,6 +11,8 @@ interface Alarm {
   label: string;
   weekdays: number[];
   weekends: number[];
+  
+  gameMode: number[];
 }
 
 const STORAGE_KEY_ALARMS = "alarms";
