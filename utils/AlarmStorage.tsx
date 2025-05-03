@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useAlarmGlobal} from "@/global/alarmGlobal";
 
 interface Alarm {
   id: string;
@@ -11,8 +12,9 @@ interface Alarm {
   label: string;
   weekdays: number[];
   weekends: number[];
-  
-  gameMode: number[];
+
+  gameMode: number;
+  difficulty: number;
 }
 
 const STORAGE_KEY_ALARMS = "alarms";

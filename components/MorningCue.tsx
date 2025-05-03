@@ -16,7 +16,7 @@ interface MorningCueModalProps {
   requiredStreak?: number;
 }
 
-const MorningCueModal: React.FC<MorningCueModalProps> = ({ visible, onComplete, requiredStreak = 3 }) => {
+const MorningCueModal: React.FC<MorningCueModalProps> = ({ visible, requiredStreak, onComplete}) => {
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [streak, setStreak] = useState(0);
   const [questionPool, setQuestionPool] = useState<Question[]>([]);

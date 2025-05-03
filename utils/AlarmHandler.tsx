@@ -4,6 +4,9 @@ import { Platform } from 'react-native';
 import { getStoredAlarms, deleteAlarm } from '@/utils/AlarmStorage';
 import { useAlarmUI } from '@/context/alarmGlobal';
 
+import { alarmGlobal } from '@/global/alarmGlobal'; 
+import { generateMaze } from '@/utils/generateMaze.tsx'
+
 
 let soundInstance: Audio.Sound | null = null;
 
@@ -19,7 +22,8 @@ interface Alarm {
   weekdays: number[];
   weekends: number[];
   
-  gameMode: number[];
+  gameMode: number;
+  difficulty: number;
 }
 
 Audio.setAudioModeAsync({
@@ -74,7 +78,7 @@ export const scheduleAlarm = async (alarm: Alarm) => {
       content: {
         title: "⏰ Alarm!",
         body: `${alarm.label}`,
-        data: { alarmId: alarm.id, type: 'alarm', alarmLable: alarm.label},
+        data: { alarmId: alarm.id, type: 'alarm', alarmLable: alarm.label, alarmMode: alarm.gameMode, alarmDifficulty: alarm.difficulty},
       },
       trigger: {
         date: triggerDate,
@@ -107,10 +111,27 @@ Notifications.addNotificationResponseReceivedListener(response => {
   if (data.type === 'alarm') {
     //alert(`Alarm triggered:\n${data.alarmLable}`);
     stopAlarm();
-    setShowMorningCue(true);
+
+    alarmGlobal.getState().setDifficulty(data.alarmDifficulty);
+    const newMap = generateMaze(11+(data.alarmDifficulty*2), 11+(data.alarmDifficulty*2));
+    console.log(newMap);
+    alarmGlobal.getState().setMazeMap(newMap);
+
+    if(data.alarmMode === 0){
+      alarmGlobal.getState().setMorningCueVisible(true);
+      alarmGlobal.getState().setBallGameVisible(false);
+    }
+    
+    if(data.alarmMode === 1){
+      alarmGlobal.getState().setMorningCueVisible(false);
+      alarmGlobal.getState().setBallGameVisible(true);
+    }
+
+    
+
   }
-  console.log("response: ");
-  console.log(response);
+
+  console.log("response: ", response);
 
 });
 

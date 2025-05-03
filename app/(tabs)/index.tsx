@@ -9,6 +9,8 @@ import { getStoredAlarms, saveAlarms, deleteAlarm} from "@/utils/AlarmStorage";
 
 import { scheduleAlarm, requestPermissions, unscheduleAlarm, playAlarmSound, stopAlarm} from "@/utils/AlarmHandler";
 
+import {useAlarmGlobal} from "@/global/alarmGlobal";
+
 let soundInstance: Audio.Sound | null = null;
 
 interface Alarm {
@@ -23,7 +25,8 @@ interface Alarm {
   weekdays: number[];
   weekends: number[];
 
-  gameMode: number[];
+  gameMode: number;
+  difficulty: number; 
 }
 
 
@@ -31,9 +34,21 @@ export default function Alarm() {
 
   const [alarms, setAlarms] = React.useState<Alarm[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [morningCueVisible, setMorningCueVisible] = useState(false);
-  const [ballGameVisible, setBallGameVisible] = useState(false);
   const [alarmToEdit, setAlarmToEdit] = useState<Alarm | null>(null);
+
+  const { 
+    morningCueVisible, 
+    setMorningCueVisible, 
+
+    ballGameVisible, 
+    setBallGameVisible, 
+
+    difficulty, 
+    setDifficulty,
+
+    mazeMap,
+    setMazeMap
+  } = useAlarmGlobal();
 
   //load saved alarms
   useEffect(() => {
@@ -69,8 +84,13 @@ export default function Alarm() {
   };
 
   const openAddModal2 = () => {
+    setMorningCueVisible(true);
+  }
+
+  const openAddModal3 = () => {
     setBallGameVisible(true);
   }
+
 
   const openEditModal = (alarm: Alarm) => {
     setAlarmToEdit(alarm);
@@ -83,10 +103,6 @@ export default function Alarm() {
         <Text style={styles.title}>MyAlarm</Text>
         <TouchableOpacity style={styles.addButton} onPress={() => openAddModal()}>
           <Ionicons name="add" size={32} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.addButton} onPress={() => openAddModal2()}>
-          <Ionicons name="add" size={12} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -126,6 +142,7 @@ export default function Alarm() {
       <MorningCueModal
         //visible={true}
         visible={morningCueVisible}
+        requiredStreak={difficulty}
         onComplete={() => {
           stopAlarm();
           setMorningCueVisible(false);
@@ -136,6 +153,8 @@ export default function Alarm() {
       <BallGameModal
         //visible={false}
         visible={ballGameVisible}
+        dim={11+(difficulty*2)}
+        mazeMap={mazeMap}
         onComplete={() => {
           stopAlarm();
           setBallGameVisible(false);

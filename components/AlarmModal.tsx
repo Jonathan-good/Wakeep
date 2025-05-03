@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
+import { SegmentedButtons } from 'react-native-paper';
 
 interface Alarm {
 	id: string;
@@ -15,7 +16,8 @@ interface Alarm {
 	weekdays: number[];
 	weekends: number[];
 
-	gameMode: number[];
+	gameMode: number;
+  difficulty: number;
 }
 
 interface AlarmModalProps {
@@ -38,7 +40,8 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	const [label, setLabel] = useState("");
 	const [weekdays, setWeekdays] = useState<number[]>([]);
 	const [weekends, setWeekends] = useState<number[]>([]);
-	const [gameMode, setModes] = useState<number[]>([]);
+	const [gameMode, setModes] = useState<number>(0);
+	const [difficulty, setDifficulty] = useState<number>(3);
 
 	const getCurrentTime = () => {
 	    const now = new Date();
@@ -63,6 +66,7 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	      setWeekdays(alarmToEdit.weekdays);
 	      setWeekends(alarmToEdit.weekends);
 	      setModes(alarmToEdit.gameMode);
+	      setDifficulty(alarmToEdit.difficulty);
 	    } else {
 	      // Adding a new alarm → Use current time
 	      const { currentHour, currentMinutes, isAM } = getCurrentTime();
@@ -72,7 +76,8 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	      setLabel("");
 	      setWeekdays([0,0,0,0,0]);
 	      setWeekends([0,0]);
-	      setModes([0,0]);
+	      setModes(0);
+	      setDifficulty(3);
 	    }
 	  }, [alarmToEdit]);
 
@@ -106,6 +111,7 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	      "weekdays": weekdays,
 	      "weekends": weekends,
 	      "gameMode": gameMode,
+	      "difficulty": difficulty,
 	    };
 
 	    onSave(newAlarm);
@@ -144,7 +150,10 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	          </View>
 
 	          {/* Alarm Label Input */}
-	          <TextInput style={styles.input} placeholder="Alarm" value={label} onChangeText={setLabel} />
+	          <View style={styles.labelRow}>
+		          <Text>Label:   </Text>
+		          <TextInput style={styles.input} placeholder="Alarm" value={label} onChangeText={setLabel} />
+	          </View>
 
 	          {/* Select Repeat Days */}
 	          <View style={styles.daysWeekdayRow}>
@@ -171,17 +180,40 @@ const AlarmModal : React.FC<AlarmModalProps> = ({visible, onClose, onSave, onDel
 	            ))}
 	          </View>
 
-	          <View style={styles.modesRow}>
-	            {modesList.map((mode, index) => (
-	              <TouchableOpacity
-	                key={`mode-${index}`}
-	                style={[styles.dayButton, gameMode[index] === 1 && styles.selectedMode]}
-	                onPress={() => toggleMode(index)}
-	              >
-	                <Text style={styles.dayText}>{mode}</Text>
-	              </TouchableOpacity>
-	            ))}
-	          </View>
+	          <View style={styles.segmentRow}>
+						  {modesList.map((mode, index) => (
+						    <TouchableOpacity
+						      key={index}
+						      style={[
+						        styles.segmentButton,
+						        gameMode === index && styles.segmentSelected,
+						      ]}
+						      onPress={() => setModes(index)}
+						    >
+						      <Text
+						        style={[
+						          styles.segmentText,
+						          gameMode === index && styles.segmentTextSelected,
+						        ]}
+						      >
+						        {mode}
+						      </Text>
+						    </TouchableOpacity>
+						  ))}
+						</View>
+
+	          <View style={styles.labelRow}>
+						  <Text style={styles.label}>Difficulty:   </Text>
+						  <TouchableOpacity onPress={() => setDifficulty(Math.max(1, difficulty - 1))}>
+						    <Text style={styles.stepButton}>➖</Text>
+						  </TouchableOpacity>
+						  <Text style={styles.difficultyValue}>{difficulty}</Text>
+						  <TouchableOpacity onPress={() => setDifficulty(difficulty + 1)}>
+						    <Text style={styles.stepButton}>➕</Text>
+						  </TouchableOpacity>
+						</View>
+
+	          
 
 	          {/* Save & Cancel Buttons */}
 	          <View style={styles.buttonContainer}>
@@ -235,12 +267,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 3,
   },
+  labelRow: {
+  	flexDirection: 'row',
+  	alignItems: 'center',
+  	marginVertical: 10,
+  }, 
   input: {
+  	flex: 1,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
     padding: 10,
-    marginVertical: 10,
   },
   daysWeekdayRow: {
     flexDirection: "row",
@@ -249,11 +286,6 @@ const styles = StyleSheet.create({
   },
   daysWeekendRow: {
     flexDirection: "row",
-    marginVertical: 10,
-    justifyContent: "space-evenly",
-  },
-  modesRow: {
-  	flexDirection: "row",
     marginVertical: 10,
     justifyContent: "space-evenly",
   },
@@ -269,13 +301,43 @@ const styles = StyleSheet.create({
     backgroundColor: "#7A6F9D",
     borderColor: "#7A6F9D",
   },
-  selectedMode: {
-  	backgroundColor: "coral",
-  	borderColor: "coral",
-  },
+  segmentRow: {
+	  flexDirection: 'row',
+	  justifyContent: 'center',
+	  marginVertical: 10,
+	},
+	segmentButton: {
+	  paddingVertical: 10,
+	  paddingHorizontal: 20,
+	  borderWidth: 1,
+	  borderColor: '#ccc',
+	  borderRadius: 10,
+	  marginHorizontal: 5,
+	  backgroundColor: '#f5f5f5',
+	},
+	segmentSelected: {
+	  backgroundColor: 'coral',
+	  borderColor: 'coral',
+	},
+	segmentText: {
+	  fontSize: 16,
+	  color: '#555',
+	},
+
+	segmentTextSelected: {
+	  color: 'white',
+	  fontWeight: 'bold',
+	},
   dayText: {
     color: "#000",
   },
+  stepButton: {
+	  fontSize: 24,
+	  marginHorizontal: 30,
+	},
+	difficultyValue: {
+	  fontSize: 20,
+	},
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

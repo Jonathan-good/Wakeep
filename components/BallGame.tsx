@@ -1,36 +1,38 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Modal, View, StyleSheet, Animated, Dimensions, Text, Alert} from 'react-native';
 import { Accelerometer } from 'expo-sensors';
-import { generateMaze } from '@/utils/generateMaze.tsx'
+import { generateMaze } from '@/utils/generateMaze.tsx';
+import {useAlarmGlobal} from "@/global/alarmGlobal";
 
 interface BallGameModalProps {
 	visible: boolean;
+	dim: number;
+	mazeMap: number[][];
 	onComplete: () => void;
 }
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const MAZE_ROWS = 15;
-const MAZE_COLS = 15;
-const CELL_SIZE = SCREEN_WIDTH / MAZE_COLS;
+const BallGameModal: React.FC<BallGameModalProps> = ({ visible, dim, mazeMap, onComplete}) => {
 
-const BALL_SIZE = CELL_SIZE * 0.8;
-const BALL_RADIUS = BALL_SIZE / 2;
+	const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const ALPHA = 0.05;
-const FRICTION = 0.99;
-const EPS = 0.05;
-const MAX_VELOCITY = 1.5;
+	const MAZE_ROWS = dim;
+	const MAZE_COLS = dim;
+	const CELL_SIZE = SCREEN_WIDTH / MAZE_COLS;
 
-const INIT_X_POS = CELL_SIZE * 1.5 - BALL_RADIUS;
-const INIT_Y_POS = CELL_SIZE * 1.5 - BALL_RADIUS + (SCREEN_HEIGHT / 2 - SCREEN_WIDTH / 2);
+	const BALL_SIZE = CELL_SIZE * 0.8;
+	const BALL_RADIUS = BALL_SIZE / 2;
 
+	const ALPHA = 0.05;
+	const FRICTION = 0.99;
+	const EPS = 0.05;
+	const MAX_VELOCITY = 1.5;
 
+	const INIT_X_POS = CELL_SIZE * 1.5 - BALL_RADIUS;
+	const INIT_Y_POS = CELL_SIZE * 1.5 - BALL_RADIUS + (SCREEN_HEIGHT / 2 - SCREEN_WIDTH / 2);
 
-const BallGameModal: React.FC<BallGameModalProps> = ({ visible, onComplete}) => {
 	const [subscription, setSubscription] = useState(null);
 	const [won, setWon] = useState(false);
-	const [mazeMap, setMazeMap] = useState(generateMaze(MAZE_ROWS, MAZE_COLS));
 	
 	const ballPosition = useRef(new Animated.ValueXY({
 		x: INIT_X_POS, 
@@ -38,6 +40,26 @@ const BallGameModal: React.FC<BallGameModalProps> = ({ visible, onComplete}) => 
 	})).current;
 
 	const velocity = useRef({ x: 0, y: 0 });
+
+	const styles = StyleSheet.create({
+		container: {
+			flex: 1,
+			position: 'relative',
+			backgroundColor: '#ddd',
+		},
+		cell: {
+			position: 'absolute',
+			width: CELL_SIZE,
+			height: CELL_SIZE,
+		},
+		ball: {
+			width: BALL_SIZE,
+			height: BALL_SIZE,
+			borderRadius: BALL_RADIUS,
+			backgroundColor: '#4A3F6D',
+			position: 'absolute',
+		},
+	});
 
 	const getCell = (x: number, y: number) => {
 		const col = Math.floor((x + BALL_RADIUS) / CELL_SIZE);
@@ -63,10 +85,6 @@ const BallGameModal: React.FC<BallGameModalProps> = ({ visible, onComplete}) => 
 		const { row, col } = getCell(x, y);
 		return mazeMap[row]?.[col] === 2;
 	};
-
-	const resetMaze = () => {
-		setMazeMap(generateMaze(MAZE_ROWS, MAZE_COLS));
-	}
 
 	const _subscribe = () => {
 		setSubscription(
@@ -122,19 +140,17 @@ const BallGameModal: React.FC<BallGameModalProps> = ({ visible, onComplete}) => 
 		setSubscription(null);
 	}
 
-
-
 	useEffect(() => {
 		if (visible) {
 			ballPosition.setValue({x: INIT_X_POS, y: INIT_Y_POS});
 			_subscribe();
-
 		} else {
-			resetMaze();
 			setWon(false);
 		}
 
-		return () => subscription && subscription.remove();
+		return () => {
+		  _unsubscribe();
+		};
 	}, [visible]);
 
 	useEffect(() => {
@@ -170,25 +186,5 @@ const BallGameModal: React.FC<BallGameModalProps> = ({ visible, onComplete}) => 
 		</Modal>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		position: 'relative',
-		backgroundColor: '#ddd',
-	},
-	cell: {
-		position: 'absolute',
-		width: CELL_SIZE,
-		height: CELL_SIZE,
-	},
-	ball: {
-		width: BALL_SIZE,
-		height: BALL_SIZE,
-		borderRadius: BALL_RADIUS,
-		backgroundColor: '#4A3F6D',
-		position: 'absolute',
-	},
-});
 
 export default BallGameModal;

@@ -1,8 +1,152 @@
 [
   {
-    "question": "lol",
-    "choices": ["lolol", "m", "lll", "lllll"],
-    "answer": "m"
+    "question": "Who is known as the father of psychoanalysis?",
+    "choices": ["Sigmund Freud", "B.F. Skinner", "Carl Rogers", "Jean Piaget"],
+    "answer": "Sigmund Freud"
   },
-  
+  {
+    "question": "Which part of the brain is primarily responsible for balance and coordination?",
+    "choices": ["Cerebrum", "Cerebellum", "Thalamus", "Medulla"],
+    "answer": "Cerebellum"
+  },
+  {
+    "question": "What is the basic unit of the nervous system?",
+    "choices": ["Neuron", "Axon", "Dendrite", "Synapse"],
+    "answer": "Neuron"
+  },
+  {
+    "question": "Which psychological approach focuses on observable behavior only?",
+    "choices": ["Cognitive", "Behavioral", "Humanistic", "Psychoanalytic"],
+    "answer": "Behavioral"
+  },
+  {
+    "question": "In classical conditioning, what is the learned response called?",
+    "choices": ["Unconditioned response", "Conditioned stimulus", "Conditioned response", "Neutral stimulus"],
+    "answer": "Conditioned response"
+  },
+  {
+    "question": "Which researcher is associated with operant conditioning?",
+    "choices": ["Ivan Pavlov", "John Watson", "B.F. Skinner", "Albert Bandura"],
+    "answer": "B.F. Skinner"
+  },
+  {
+    "question": "What term describes the brain's ability to change and adapt as a result of experience?",
+    "choices": ["Plasticity", "Malleability", "Elasticity", "Neurogenesis"],
+    "answer": "Plasticity"
+  },
+  {
+    "question": "What is the first stage of Piaget’s cognitive development theory?",
+    "choices": ["Preoperational", "Concrete operational", "Sensorimotor", "Formal operational"],
+    "answer": "Sensorimotor"
+  },
+  {
+    "question": "Which neurotransmitter is most associated with mood regulation?",
+    "choices": ["Dopamine", "Serotonin", "GABA", "Acetylcholine"],
+    "answer": "Serotonin"
+  },
+  {
+    "question": "What type of memory holds information for a few seconds or less?",
+    "choices": ["Short-term memory", "Sensory memory", "Long-term memory", "Procedural memory"],
+    "answer": "Sensory memory"
+  },
+  {
+    "question": "What does an fMRI scan measure?",
+    "choices": ["Electrical activity", "Blood flow", "Chemical levels", "Brain structure only"],
+    "answer": "Blood flow"
+  },
+  {
+    "question": "Which theory of emotion suggests that arousal comes before emotion?",
+    "choices": ["James-Lange Theory", "Cannon-Bard Theory", "Two-Factor Theory", "Opponent-Process Theory"],
+    "answer": "James-Lange Theory"
+  },
+  {
+    "question": "Which schedule of reinforcement produces the highest rate of response?",
+    "choices": ["Fixed interval", "Fixed ratio", "Variable interval", "Variable ratio"],
+    "answer": "Variable ratio"
+  },
+  {
+    "question": "Which sleep disorder involves sudden uncontrollable sleep attacks?",
+    "choices": ["Insomnia", "Sleep apnea", "Narcolepsy", "Night terrors"],
+    "answer": "Narcolepsy"
+  },
+  {
+    "question": "Which concept explains why a forgotten memory suddenly comes back after a cue?",
+    "choices": ["Encoding failure", "Retrograde amnesia", "Priming", "Proactive interference"],
+    "answer": "Priming"
+  },
+  {
+    "question": "What term describes the body's tendency to maintain a balanced internal state?",
+    "choices": ["Homeostasis", "Metabolism", "Equilibrium", "Symbiosis"],
+    "answer": "Homeostasis"
+  },
+  {
+    "question": "Who conducted the 'Little Albert' experiment on conditioned emotional responses?",
+    "choices": ["John Watson", "Carl Jung", "William James", "Mary Ainsworth"],
+    "answer": "John Watson"
+  },
+  {
+    "question": "Which brain structure connects the two hemispheres?",
+    "choices": ["Amygdala", "Corpus callosum", "Hypothalamus", "Pons"],
+    "answer": "Corpus callosum"
+  },
+  {
+    "question": "Which term describes a mental shortcut that allows people to solve problems quickly?",
+    "choices": ["Algorithm", "Heuristic", "Insight", "Schema"],
+    "answer": "Heuristic"
+  },
+  {
+    "question": "What is the primary focus of humanistic psychology?",
+    "choices": ["The unconscious mind", "Observable behaviors", "Growth and self-actualization", "Biological processes"],
+    "answer": "Growth and self-actualization"
+  },
+  {
+    "question": "Who developed the hierarchy of needs theory?",
+    "choices": ["Abraham Maslow", "Carl Rogers", "Erik Erikson", "Jean Piaget"],
+    "answer": "Abraham Maslow"
+  },
+  {
+    "question": "What is an example of an extrinsic motivator?",
+    "choices": ["Enjoyment", "Curiosity", "Pride", "Money"],
+    "answer": "Money"
+  },
+  {
+    "question": "Which type of reinforcement strengthens behavior by removing an unpleasant stimulus?",
+    "choices": ["Positive reinforcement", "Negative reinforcement", "Punishment", "Extinction"],
+    "answer": "Negative reinforcement"
+  },
+  {
+    "question": "Which theory suggests we learn by observing others?",
+    "choices": ["Operant conditioning", "Classical conditioning", "Social learning theory", "Cognitive dissonance theory"],
+    "answer": "Social learning theory"
+  },
+  {
+    "question": "What kind of memory is riding a bike an example of?",
+    "choices": ["Episodic memory", "Semantic memory", "Procedural memory", "Working memory"],
+    "answer": "Procedural memory"
+  },
+  {
+    "question": "What brain structure is crucial for forming new memories?",
+    "choices": ["Amygdala", "Cerebellum", "Hippocampus", "Thalamus"],
+    "answer": "Hippocampus"
+  },
+  {
+    "question": "In Erikson’s stages, what is the main conflict for adolescents?",
+    "choices": ["Trust vs. Mistrust", "Identity vs. Role Confusion", "Intimacy vs. Isolation", "Autonomy vs. Shame"],
+    "answer": "Identity vs. Role Confusion"
+  },
+  {
+    "question": "Which gland is often called the 'master gland' of the endocrine system?",
+    "choices": ["Adrenal", "Pineal", "Pituitary", "Thyroid"],
+    "answer": "Pituitary"
+  },
+  {
+    "question": "Which psychological perspective focuses on the influence of genetics and hormones?",
+    "choices": ["Behavioral", "Cognitive", "Biological", "Humanistic"],
+    "answer": "Biological"
+  },
+  {
+    "question": "What is the term for a sensory experience without external stimulation?",
+    "choices": ["Hallucination", "Delusion", "Illusion", "Sensation"],
+    "answer": "Hallucination"
+  }
 ]

@@ -14,7 +14,8 @@ interface Alarm {
   weekdays: number[];
   weekends: number[];
 
-  gameMode: number[];
+  gameMode: number;
+  difficulty: number;
 }
 
 interface AlarmCardProps {
@@ -24,7 +25,6 @@ interface AlarmCardProps {
 
 const weekdaysList : string[] = ["M", "T", "W", "Th", "F"];
 const weekendsList : string[] = ["Sa", "Su"];
-const modesList : string[] = ["Q", "B"];
 
 const AlarmCard: React.FC<AlarmCardProps> = ({ alarm, onOptionsPress }) => {
 
@@ -53,13 +53,27 @@ const AlarmCard: React.FC<AlarmCardProps> = ({ alarm, onOptionsPress }) => {
       <Text style={styles.time}> {`${ String(alarm.hour).padStart(2, "0") }:${ String(alarm.minutes).padStart(2, "0") } ${alarm.AM ? "AM" : "PM"}`} </Text>
       <Text style={styles.label}>{alarm.label}</Text>
 
+
       <View style={styles.gameModeRow}>
-        {alarm.gameMode.map((mode, index) => (
-          <Text key={`mode-${index}`} style={(mode === 1) ? styles.modeEnabled : styles.modeDisabled}>
-            {modesList[index]}
-          </Text>
-        ))}
+
+          <Ionicons
+            name={alarm.gameMode === 0 ? "document-text" : "document-text-outline"}
+            size={32}
+            color={alarm.gameMode === 0 ? "coral" : "#B0B0B0"}
+            style={styles.gameModeStyle}
+          />
+          <Ionicons
+            name={alarm.gameMode === 1 ? "tennisball" : "tennisball-outline"}
+            size={32}
+            color={alarm.gameMode === 1 ? "coral" : "#B0B0B0"}
+            style={styles.gameModeStyle}
+          />
+
       </View>
+
+      <Text style={styles.difficultyStyle}>
+        {alarm.difficulty}
+      </Text>
 
       {/* Options Button */}
       <TouchableOpacity style={styles.optionsButton} onPress={() => onOptionsPress()}>
@@ -96,8 +110,13 @@ const styles = StyleSheet.create({
   },
   gameModeRow: {
     flexDirection: "row",
-    marginBottom: 8,
+    marginBottom: 20,
+    marginTop: 10,
     justifyContent: "center",
+  },
+  gameModeStyle: {
+    marginLeft: 10,
+    marginRight: 10,
   },
   dayEnabled: {
     fontSize: 12,
@@ -140,6 +159,14 @@ const styles = StyleSheet.create({
     bottom: 10,
     right: 10,
   },
+  difficultyStyle: {
+    position: "absolute",
+    bottom: 13,
+    left: 10,
+    color: "#333",
+    fontWeight: "bold",
+    fontSize: 15,
+  }
 });
 
 export default AlarmCard;
